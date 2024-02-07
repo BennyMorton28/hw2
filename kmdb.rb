@@ -69,17 +69,22 @@
 
 # Delete existing data, so you'll start fresh each time this script is run.
 # Use `Model.destroy_all` code.
-# TODO!
+# TODO! done
 
 Role.destroy_all
 Movie.destroy_all
 Actor.destroy_all
 Studio.destroy_all
 
-
 # Generate models and tables, according to the domain model.
-# TODO!
-# done!
+# TODO! 
+# typed these into terminal:
+# rails generate model Studio name:string
+# rails generate model Movie title:string year_released:integer rated:string studio:references
+# rails generate model Actor name:string
+# rails generate model Role movie:references actor:references character_name:string
+# then I ran rails db:migrate which created the migration files
+
 
 # Insert data into the database that reflects the sample data shown above.
 # Do not use hard-coded foreign key IDs.
@@ -154,6 +159,7 @@ puts "======"
 puts ""
 
 # Query the movies data and loop through the results to display the movies output.
+#done
 Movie.includes(:studio).each do |movie|
     puts "#{movie.title} #{movie.year_released} #{movie.rated} #{movie.studio.name}"
   end

@@ -71,21 +71,82 @@
 # Use `Model.destroy_all` code.
 # TODO!
 
-Studio.destroy_all
+Role.destroy_all
 Movie.destroy_all
 Actor.destroy_all
-Role.destroy_all
-
-#Movies.destroy_all
-
+Studio.destroy_all
 
 
 # Generate models and tables, according to the domain model.
 # TODO!
+# done!
 
 # Insert data into the database that reflects the sample data shown above.
 # Do not use hard-coded foreign key IDs.
 # TODO!
+
+#add studio
+warner_bros = Studio.create!(name: "Warner Bros.")
+
+#add movies
+batman_begins = Movie.create!(title: "Batman Begins", year_released: 2005, rated: "PG-13", studio: warner_bros)
+dark_knight = Movie.create!(title: "The Dark Knight", year_released: 2008, rated: "PG-13", studio: warner_bros)
+dk_rises = Movie.create!(title: "The Dark Knight Rises", year_released: 2012, rated: "PG-13", studio: warner_bros)
+
+
+#add actors and roles
+# Helper method to find or create actors by name
+def find_or_create_actor(name)
+    Actor.find_or_create_by(name: name)
+  end
+  
+  # Helper method to create role
+  def create_role(movie, actor_name, character_name)
+    actor = find_or_create_actor(actor_name)
+    Role.create!(movie: movie, actor: actor, character_name: character_name)
+  end
+  
+  # movie hash assignment
+  movies = {
+    "Batman Begins" => batman_begins,
+    "The Dark Knight" => dark_knight,
+    "The Dark Knight Rises" => dk_rises
+  }
+  
+  # define roles for each movie
+  roles = {
+    "Batman Begins" => [
+      ["Christian Bale", "Bruce Wayne"],
+      ["Michael Caine", "Alfred"],
+      ["Liam Neeson", "Ra's Al Ghul"],
+      ["Katie Holmes", "Rachel Dawes"],
+      ["Gary Oldman", "Commissioner Gordon"]
+    ],
+    "The Dark Knight" => [
+      ["Christian Bale", "Bruce Wayne"],
+      ["Heath Ledger", "Joker"],
+      ["Aaron Eckhart", "Harvey Dent"],
+      ["Michael Caine", "Alfred"],
+      ["Maggie Gyllenhaal", "Rachel Dawes"]
+    ],
+    "The Dark Knight Rises" => [
+      ["Christian Bale", "Bruce Wayne"],
+      ["Gary Oldman", "Commissioner Gordon"],
+      ["Tom Hardy", "Bane"],
+      ["Joseph Gordon-Levitt", "John Blake"],
+      ["Anne Hathaway", "Selina Kyle"]
+    ]
+  }
+  
+  # Iterate over the roles hash to create roles for each movie
+  roles.each do |movie_title, actor_roles|
+    movie = movies[movie_title]
+    actor_roles.each do |actor_info|
+      actor_name, character_name = actor_info
+      create_role(movie, actor_name, character_name)
+    end
+  end
+
 
 # Prints a header for the movies output
 puts "Movies"
@@ -93,7 +154,9 @@ puts "======"
 puts ""
 
 # Query the movies data and loop through the results to display the movies output.
-# TODO!
+Movie.includes(:studio).each do |movie|
+    puts "#{movie.title} #{movie.year_released} #{movie.rated} #{movie.studio.name}"
+  end
 
 # Prints a header for the cast output
 puts ""
@@ -101,5 +164,19 @@ puts "Top Cast"
 puts "========"
 puts ""
 
+
+
 # Query the cast data and loop through the results to display the cast output for each movie.
 # TODO!
+movies = Movie.includes(roles: :actor).all
+
+movies.each do |movie|
+  # For each movie, iterate over its roles
+  movie.roles.each do |role|
+    # Print the movie title, actor name, and character name
+    puts "#{movie.title} #{role.actor.name} #{role.character_name}"
+  end
+end
+
+
+
